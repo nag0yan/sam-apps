@@ -14,21 +14,21 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
-  HelloWorldFunction:
+  UploadPhotoFunction:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
       Architectures:
       - x86_64
       Events:
-        HelloWorld:
+        UploadPhoto:
           Type: Api
           Properties:
             Path: /hello
             Method: get
     Metadata:
       DockerTag: nodejs22.x-v1
-      DockerContext: ./hello-world
+      DockerContext: ./upload-photo
       Dockerfile: Dockerfile
 
   ApplicationResourceGroup:
@@ -47,12 +47,12 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
+  UploadPhotoApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
+  UploadPhotoFunction:
     Description: Hello World Lambda Function ARN
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
+    Value: !GetAtt UploadPhotoFunction.Arn
+  UploadPhotoFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+    Value: !GetAtt UploadPhotoFunctionRole.Arn
