@@ -1,2 +1,5 @@
 [tools]
+aws-cli = "latest"
 aws-sam-cli = "1.139"
+gitleaks = "latest"
+task = "latest"
