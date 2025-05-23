@@ -27,9 +27,29 @@ Resources:
             Path: /hello
             Method: get
     Metadata:
-      DockerTag: nodejs22.x-v1
-      DockerContext: ./upload-photo
+      DockerTag: nodejs22.x
+      DockerContext: ./app
       Dockerfile: Dockerfile
+      DockerBuildArgs:
+        FEATURE: "upload-photo"
+  DownloadPhotoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+      - x86_64
+      Events:
+        DownloadPhoto:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+    Metadata:
+      DockerTag: nodejs22.x
+      DockerContext: ./app
+      Dockerfile: Dockerfile
+      DockerBuildArgs:
+        FEATURE: "download-photo"
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
