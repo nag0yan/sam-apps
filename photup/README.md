@@ -1,116 +1,37 @@
 # photup
 
-This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
+```gemini
+要件：画像アップロード・取得API
+目的: このAPIは、AWS SAM を使って、ファイルのアップロードと取得を伴うサーバーレスAPIを開発する能力を養うことを目的としています。特に、API Gateway と S3 の連携、そして簡単な認証の概念を学びます。
 
-- hello-world - Code for the application's Lambda function and Project Dockerfile.
-- events - Invocation events that you can use to invoke the function.
-- hello-world/tests - Unit tests for the application code.
-- template.yaml - A template that defines the application's AWS resources.
+機能要件
+画像のアップロード (POST /images)
 
-The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
+クライアントは、画像ファイル（JPEG, PNG, GIF など）をバイナリデータとしてこのエンドポイントにアップロードします。
+Lambda 関数 はアップロードされた画像データを受け取り、ユニークなファイル名（例: UUID を使用）を生成して、指定された S3 バケット に保存します。
+保存後、Lambda 関数はアップロードされた画像の公開アクセス可能な S3 URL (または、一時的にアクセス可能なプリサインURL も検討) をクライアントに返します。
+処理が成功した場合、HTTPステータス: 201 Created を返します。
+画像の一覧取得 (GET /images)
 
-## Deploy the sample application
+Lambda 関数 は指定された S3 バケット内の全ての画像ファイルのリストを取得します。
+各画像ファイルについて、そのファイル名と対応する S3 URL を含んだリストをクライアントに返します。
+画像がない場合は空のリストを返します（HTTPステータス: 200 OK）。
+特定の画像の取得 (GET /images/{key})
 
-The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
+パスパラメータとして指定された key (S3 上のファイル名) に一致する画像ファイルを S3 バケットから取得します。
+取得した画像をバイナリデータとしてクライアントに返します。
+画像が見つからない場合は 404 Not Found エラーを返します。
+注意点: API Gateway がバイナリデータを適切に扱うための設定（バイナリメディアタイプ）が必要です。
+簡易認証 (POST /images と PUT /images)
 
-To use the SAM CLI, you need the following tools.
-
-* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
-* SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-
-You may need the following for local testing.
-
-* Node.js - [Install Node.js 22](https://nodejs.org/en/), including the NPM package management tool.
-
-To build and deploy your application for the first time, run the following in your shell:
-
-```bash
-sam build
-sam deploy --guided
+アップロード操作 (POST /images) および将来的な削除操作 (DELETE /images/{key} を追加する場合) について、簡単な認証メカニズムを導入します。
+API キー を利用した認証を実装し、API キーが正しく指定された場合のみ操作を許可するようにします。これにより、誰でも画像をアップロードできる状況を避けます。
+オプション: もし余裕があれば、Cognito User Pools を使った認証に挑戦しても良いでしょう。
+技術要件
+フレームワーク: AWS Serverless Application Model (SAM)
+API Gateway: REST API を使用し、各エンドポイントを Lambda 関数に連携させます。バイナリメディアタイプ の設定が重要です。
+Lambda 関数: Python, Node.js, Go など、慣れている言語で実装します。画像アップロード用、一覧取得用、単一画像取得用の3つの Lambda 関数を基本とします。
+オブジェクトストレージ: Amazon S3 を使用し、画像を保存するバケットを作成します。バケットのアクセス権限（ポリシー）にも注意が必要です。
+認証: API Gateway の API キー 機能を活用します。
+IAM ロール: Lambda 関数が S3 バケットへのアクセス（読み取り、書き込み）に必要な適切な権限を持つ IAM ロールを設定します。
 ```
-
-The first command will build a docker image from a Dockerfile and then the source of your application inside the Docker image. The second command will package and deploy your application to AWS, with a series of prompts:
-
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
-* **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
-
-You can find your API Gateway Endpoint URL in the output values displayed after deployment.
-
-## Use the SAM CLI to build and test locally
-
-Build your application with the `sam build` command.
-
-```bash
-photup$ sam build
-```
-
-The SAM CLI builds a docker image from a Dockerfile and then installs dependencies defined in `hello-world/package.json` inside the docker image. The processed template file is saved in the `.aws-sam/build` folder.
-* **Note**: The Dockerfile included in this sample application uses `npm install` by default. If you are building your code for production, you can modify it to use `npm ci` instead.
-
-Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
-
-Run functions locally and invoke them with the `sam local invoke` command.
-
-```bash
-photup$ sam local invoke HelloWorldFunction --event events/event.json
-```
-
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
-
-```bash
-photup$ sam local start-api
-photup$ curl http://localhost:3000/
-```
-
-The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
-
-```yaml
-      Events:
-        HelloWorld:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: get
-```
-
-## Add a resource to your application
-The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
-
-## Fetch, tail, and filter Lambda function logs
-
-To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs generated by your deployed Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
-
-`NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
-
-```bash
-photup$ sam logs -n HelloWorldFunction --stack-name photup --tail
-```
-
-You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
-
-## Unit tests
-
-Tests are defined in the `hello-world/tests` folder in this project. Use NPM to install the [Mocha test framework](https://mochajs.org/) and run unit tests from your local machine.
-
-```bash
-photup$ cd hello-world
-hello-world$ npm install
-hello-world$ npm run test
-```
-
-## Cleanup
-
-To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
-
-```bash
-sam delete --stack-name photup
-```
-
-## Resources
-
-See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
-
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
