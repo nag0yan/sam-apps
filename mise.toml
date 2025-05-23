@@ -1,0 +1,2 @@
+[tools]
+aws-sam-cli = "1.139"
