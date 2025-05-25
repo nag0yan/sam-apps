@@ -14,6 +14,17 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
+  ImageStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "photup-images-${AWS::Region}-${AWS::AccountId}"
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: "ExpireOldImages"
+            Status: Enabled
+            ExpirationInDays: 30
   UploadImageFunction:
     Type: AWS::Serverless::Function
     Properties:
