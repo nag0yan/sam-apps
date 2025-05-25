@@ -1,37 +1,43 @@
 # photup
 
-```gemini
-要件：画像アップロード・取得API
-目的: このAPIは、AWS SAM を使って、ファイルのアップロードと取得を伴うサーバーレスAPIを開発する能力を養うことを目的としています。特に、API Gateway と S3 の連携、そして簡単な認証の概念を学びます。
+画像アップロード・取得アプリ
+[Geminiからの要件](REQUIREMENTS.md)
 
-機能要件
-画像のアップロード (POST /images)
+## 要件整理・メモ
 
-クライアントは、画像ファイル（JPEG, PNG, GIF など）をバイナリデータとしてこのエンドポイントにアップロードします。
-Lambda 関数 はアップロードされた画像データを受け取り、ユニークなファイル名（例: UUID を使用）を生成して、指定された S3 バケット に保存します。
-保存後、Lambda 関数はアップロードされた画像の公開アクセス可能な S3 URL (または、一時的にアクセス可能なプリサインURL も検討) をクライアントに返します。
-処理が成功した場合、HTTPステータス: 201 Created を返します。
-画像の一覧取得 (GET /images)
+アーキテクチャ図
 
-Lambda 関数 は指定された S3 バケット内の全ての画像ファイルのリストを取得します。
-各画像ファイルについて、そのファイル名と対応する S3 URL を含んだリストをクライアントに返します。
-画像がない場合は空のリストを返します（HTTPステータス: 200 OK）。
-特定の画像の取得 (GET /images/{key})
-
-パスパラメータとして指定された key (S3 上のファイル名) に一致する画像ファイルを S3 バケットから取得します。
-取得した画像をバイナリデータとしてクライアントに返します。
-画像が見つからない場合は 404 Not Found エラーを返します。
-注意点: API Gateway がバイナリデータを適切に扱うための設定（バイナリメディアタイプ）が必要です。
-簡易認証 (POST /images と PUT /images)
-
-アップロード操作 (POST /images) および将来的な削除操作 (DELETE /images/{key} を追加する場合) について、簡単な認証メカニズムを導入します。
-API キー を利用した認証を実装し、API キーが正しく指定された場合のみ操作を許可するようにします。これにより、誰でも画像をアップロードできる状況を避けます。
-オプション: もし余裕があれば、Cognito User Pools を使った認証に挑戦しても良いでしょう。
-技術要件
-フレームワーク: AWS Serverless Application Model (SAM)
-API Gateway: REST API を使用し、各エンドポイントを Lambda 関数に連携させます。バイナリメディアタイプ の設定が重要です。
-Lambda 関数: Python, Node.js, Go など、慣れている言語で実装します。画像アップロード用、一覧取得用、単一画像取得用の3つの Lambda 関数を基本とします。
-オブジェクトストレージ: Amazon S3 を使用し、画像を保存するバケットを作成します。バケットのアクセス権限（ポリシー）にも注意が必要です。
-認証: API Gateway の API キー 機能を活用します。
-IAM ロール: Lambda 関数が S3 バケットへのアクセス（読み取り、書き込み）に必要な適切な権限を持つ IAM ロールを設定します。
+```mermaid
+graph LR;
+  WebClient-->API-->Lambda-upload
+  Lambda-upload--store files-->S3
+  Lambda-upload--store metadata-->DynamoDB
+  WebClient-->API-->Lambda-download
+  Lambda-download--get files-->S3
+  Lambda-download--get metadata-->DynamoDB
 ```
+
+- 画像アップロード
+  - バイナリデータの送受信 <https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest_API/Sending_and_Receiving_Binary_Data>
+  - UUID <https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUI>
+  - ファイル名と保存先S3キーをDynamoDBに保存
+- 画像一覧取得
+  - ファイル名と一緒にS3キーをリストするのは意味がない上にセキュリティを損なうので却下し、「ファイル名一覧を返す」に仕様変更する
+- 画像取得
+  - ファイル名の指定はクエリ文字列で渡す
+  - バイナリデータを返す
+- 認証
+  - API Gateway APIキー
+    - <https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/serverless-controlling-access-to-apis-keys.html>
+    - <https://docs.aws.amazon.com/ja_jp/apigateway/latest/developerguide/api-key-usage-plan-cfn.html>
+    - <https://qiita.com/cony0413/items/e7f56d45cf28476162ec>
+- ステップアップ
+  - Cognito User Poolsを使った認証 (Security)
+  - S3 Presigned URLを使った配信でAPIの負荷を低減する (Reliability, Cost optimization)
+  - ファイル名が重複しそうなのでリソース管理に名前空間が必要 (Security, Reliability)
+    - API Key, User ID, ...
+  - 画像データのバリデーション (Security)
+    - 拡張子チェック
+
+分類はAWS Well-Arhitected Frameworkより  
+<https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html>
