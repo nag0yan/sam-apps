@@ -3,6 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   photup
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
 Globals:
   Function:
     Timeout: 3
@@ -17,18 +18,14 @@ Resources:
   ImageStorage:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "photup-images-${AWS::Region}-${AWS::AccountId}"
+      BucketName: !Sub photup-images-${AWS::Region}-${AWS::AccountId}
       VersioningConfiguration:
         Status: Enabled
-      LifecycleConfiguration:
-        Rules:
-          - Id: "ExpireOldImages"
-            Status: Enabled
-            ExpirationInDays: 30
   UploadImageFunction:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
+      ImageUri: ${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/photupb89c4a10/uploadimagefunction93dcad01repo
       Architectures:
       - x86_64
       Events:
@@ -37,9 +34,12 @@ Resources:
           Properties:
             Path: /images
             Method: post
+      Environment:
+        Variables:
+          BUCKET_NAME: !Sub photup-images-${AWS::Region}-${AWS::AccountId}
     Metadata:
       DockerTag: nodejs22.x
-      DockerContext: ./app
+      DockerContext: .
       Dockerfile: Dockerfile
       DockerBuildArgs:
         FEATURE: "upload-image"
