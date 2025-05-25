@@ -6,7 +6,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"@swc/core": "^1.11.29",
 		"@types/aws-lambda": "^8.10.149",
 		"@types/node": "^22.15.21",
 		"esbuild": "^0.25.4",
