@@ -5,7 +5,7 @@ const client = new S3Client({
 });
 
 export const create: Create = async (image) => {
-	const bucketName = process.env.BUCKET_NAME
+	const bucketName = process.env.BUCKET_NAME;
 	await client.send(
 		new PutObjectCommand({
 			Bucket: bucketName,

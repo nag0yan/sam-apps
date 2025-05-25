@@ -1,70 +1,56 @@
 {
-  "body": "binary",
-  "headers": {
-    "Accept": "*/*",
-    "Content-Length": "6",
-    "Content-Type": "image/png",
-    "Host": "127.0.0.1:3000",
-    "User-Agent": "curl/7.81.0",
-    "X-Forwarded-Port": "3000",
-    "X-Forwarded-Proto": "http"
-  },
-  "httpMethod": "POST",
-  "isBase64Encoded": false,
-  "multiValueHeaders": {
-    "Accept": [
-      "*/*"
-    ],
-    "Content-Length": [
-      "6"
-    ],
-    "Content-Type": [
-      "image/png"
-    ],
-    "Host": [
-      "127.0.0.1:3000"
-    ],
-    "User-Agent": [
-      "curl/7.81.0"
-    ],
-    "X-Forwarded-Port": [
-      "3000"
-    ],
-    "X-Forwarded-Proto": [
-      "http"
-    ]
-  },
-  "multiValueQueryStringParameters": null,
-  "path": "/images",
-  "pathParameters": null,
-  "queryStringParameters": null,
-  "requestContext": {
-    "accountId": "123456789012",
-    "apiId": "1234567890",
-    "domainName": "127.0.0.1:3000",
-    "extendedRequestId": null,
-    "httpMethod": "POST",
-    "identity": {
-      "accountId": null,
-      "apiKey": null,
-      "caller": null,
-      "cognitoAuthenticationProvider": null,
-      "cognitoAuthenticationType": null,
-      "cognitoIdentityPoolId": null,
-      "sourceIp": "127.0.0.1",
-      "user": null,
-      "userAgent": "Custom User Agent String",
-      "userArn": null
-    },
-    "path": "/images",
-    "protocol": "HTTP/1.1",
-    "requestId": "411b6fd0-2c29-427b-b4b5-d6734a15ba28",
-    "requestTime": "25/May/2025:03:53:36 +0000",
-    "requestTimeEpoch": 1748145216,
-    "resourceId": "123456",
-    "resourcePath": "/images",
-    "stage": "Prod"
-  },
-  "resource": "/images",
-  "stageVariables": null
+	"body": "binary",
+	"headers": {
+		"Accept": "*/*",
+		"Content-Length": "6",
+		"Content-Type": "image/png",
+		"Host": "127.0.0.1:3000",
+		"User-Agent": "curl/7.81.0",
+		"X-Forwarded-Port": "3000",
+		"X-Forwarded-Proto": "http"
+	},
+	"httpMethod": "POST",
+	"isBase64Encoded": false,
+	"multiValueHeaders": {
+		"Accept": ["*/*"],
+		"Content-Length": ["6"],
+		"Content-Type": ["image/png"],
+		"Host": ["127.0.0.1:3000"],
+		"User-Agent": ["curl/7.81.0"],
+		"X-Forwarded-Port": ["3000"],
+		"X-Forwarded-Proto": ["http"]
+	},
+	"multiValueQueryStringParameters": null,
+	"path": "/images",
+	"pathParameters": null,
+	"queryStringParameters": null,
+	"requestContext": {
+		"accountId": "123456789012",
+		"apiId": "1234567890",
+		"domainName": "127.0.0.1:3000",
+		"extendedRequestId": null,
+		"httpMethod": "POST",
+		"identity": {
+			"accountId": null,
+			"apiKey": null,
+			"caller": null,
+			"cognitoAuthenticationProvider": null,
+			"cognitoAuthenticationType": null,
+			"cognitoIdentityPoolId": null,
+			"sourceIp": "127.0.0.1",
+			"user": null,
+			"userAgent": "Custom User Agent String",
+			"userArn": null
+		},
+		"path": "/images",
+		"protocol": "HTTP/1.1",
+		"requestId": "411b6fd0-2c29-427b-b4b5-d6734a15ba28",
+		"requestTime": "25/May/2025:03:53:36 +0000",
+		"requestTimeEpoch": 1748145216,
+		"resourceId": "123456",
+		"resourcePath": "/images",
+		"stage": "Prod"
+	},
+	"resource": "/images",
+	"stageVariables": null
 }
