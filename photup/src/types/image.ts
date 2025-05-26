@@ -1,3 +1,3 @@
 export type Create = (image: {
-	data: string;
+	data: Buffer<ArrayBuffer>;
 }) => Promise<void>;

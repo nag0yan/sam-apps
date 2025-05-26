@@ -2,6 +2,8 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as image from "./image-s3";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
+	console.log("Content-Type:", event.headers["content-type"]);
+	console.log("IsBase64Encoded:", event.isBase64Encoded);
 	const body = event.body;
 	if (body == null) {
 		return {
@@ -11,9 +13,10 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 			}),
 		};
 	}
+	console.log("Body Size", body.length);
 	try {
 		await image.create({
-			data: body,
+			data: Buffer.from(body, "base64"),
 		});
 
 		const response: APIGatewayProxyResult = {

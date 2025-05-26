@@ -10,6 +10,8 @@ export const create: Create = async (image) => {
 		new PutObjectCommand({
 			Bucket: bucketName,
 			Key: crypto.randomUUID(),
+			Body: image.data,
+			ContentLength: image.data.byteLength,
 		}),
 	);
 };
