@@ -5,6 +5,7 @@
 		"fmt": "biome check --write"
 	},
 	"devDependencies": {
+		"@aws-sdk/types": "^3.804.0",
 		"@biomejs/biome": "^1.9.4",
 		"@types/aws-lambda": "^8.10.149",
 		"@types/node": "^22.15.21",
@@ -12,5 +13,8 @@
 		"tsx": "^4.19.4",
 		"typescript": "^5.8.3",
 		"vitest": "^3.1.4"
+	},
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.817.0"
 	}
 }

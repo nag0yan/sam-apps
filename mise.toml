@@ -1,7 +1,7 @@
 [tools]
 aws-cli = "latest"
-aws-sam-cli = "1.139"
 gitleaks = "latest"
 node = "22.0.0"
 pnpm = "latest"
+python = "3.13.3"
 task = "latest"

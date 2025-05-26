@@ -1,0 +1,14 @@
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  deploy:
+    desc: Build and Deploy the SAM application
+    cmds:
+      - sam build
+      - sam deploy
+  sync:
+    desc: Sync the SAM application with the latest changes
+    cmds:
+      - sam sync --image-repository "${ECR_REPOSITORY_URI}"

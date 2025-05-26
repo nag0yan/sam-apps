@@ -3,6 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   photup
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
 Globals:
   Function:
     Timeout: 3
@@ -13,25 +14,40 @@ Globals:
       LogFormat: JSON
   Api:
     TracingEnabled: true
+    BinaryMediaTypes:
+      - image/*
 Resources:
-  UploadPhotoFunction:
+  ImageStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub photup-images-${AWS::Region}-${AWS::AccountId}
+      VersioningConfiguration:
+        Status: Enabled
+  UploadImageFunction:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
+      ImageUri: ${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/photupb89c4a10/uploadimagefunction93dcad01repo
       Architectures:
       - x86_64
       Events:
-        UploadPhoto:
+        UploadImage:
           Type: Api
           Properties:
             Path: /images
             Method: post
+      Policies:
+      - S3WritePolicy:
+          BucketName: !Sub photup-images-${AWS::Region}-${AWS::AccountId}
+      Environment:
+        Variables:
+          BUCKET_NAME: !Sub photup-images-${AWS::Region}-${AWS::AccountId}
     Metadata:
       DockerTag: nodejs22.x
-      DockerContext: ./app
+      DockerContext: .
       Dockerfile: Dockerfile
       DockerBuildArgs:
-        FEATURE: "upload-photo"
+        FEATURE: "upload-image"
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -49,12 +65,12 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  UploadPhotoApi:
+  UploadImageApi:
     Description: API Gateway endpoint URL for Prod stage for Hello World function
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  UploadPhotoFunction:
+  UploadImageFunction:
     Description: Hello World Lambda Function ARN
-    Value: !GetAtt UploadPhotoFunction.Arn
-  UploadPhotoFunctionIamRole:
+    Value: !GetAtt UploadImageFunction.Arn
+  UploadImageFunctionIamRole:
     Description: Implicit IAM Role created for Hello World function
-    Value: !GetAtt UploadPhotoFunctionRole.Arn
+    Value: !GetAtt UploadImageFunctionRole.Arn
