@@ -28,6 +28,20 @@ Resources:
       BucketName: !Sub photup-images-${AWS::Region}-${AWS::AccountId}
       VersioningConfiguration:
         Status: Enabled
+  MetaDataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub photup-metadata-${AWS::Region}-${AWS::AccountId}
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+
   UploadImageFunction:
     Type: AWS::Serverless::Function
     Properties:
