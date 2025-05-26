@@ -16,6 +16,11 @@ Globals:
     TracingEnabled: true
     BinaryMediaTypes:
       - image/*
+    Auth:
+      ApiKeyRequired: true
+      UsagePlan:
+        CreateUsagePlan: SHARED
+
 Resources:
   ImageStorage:
     Type: AWS::S3::Bucket
@@ -66,11 +71,5 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   UploadImageApi:
-    Description: API Gateway endpoint URL for Prod stage for Hello World function
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  UploadImageFunction:
-    Description: Hello World Lambda Function ARN
-    Value: !GetAtt UploadImageFunction.Arn
-  UploadImageFunctionIamRole:
-    Description: Implicit IAM Role created for Hello World function
-    Value: !GetAtt UploadImageFunctionRole.Arn
+    Description: API Gateway endpoint
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
