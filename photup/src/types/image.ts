@@ -1,3 +1,4 @@
-export type Create = (image: {
-	data: Buffer<ArrayBuffer>;
+export type CreateRequest = (image: {
+	filename: string;
+	data: string;
 }) => Promise<void>;

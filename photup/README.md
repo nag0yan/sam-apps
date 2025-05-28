@@ -21,6 +21,7 @@ graph LR;
   - バイナリデータの送受信 <https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest_API/Sending_and_Receiving_Binary_Data>
   - UUID <https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUI>
   - ファイル名と保存先S3キーをDynamoDBに保存
+  - メタデータを送る場合バイナリをbase64エンコードしたうえでjsonでPOSTするのが速そう。multipart form dataはパースが複雑層なので断念。
 - 画像一覧取得
   - ファイル名と一緒にS3キーをリストするのは意味がない上にセキュリティを損なうので却下し、「ファイル名一覧を返す」に仕様変更する
 - 画像取得

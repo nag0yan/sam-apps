@@ -2,10 +2,8 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as image from "./image-s3";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
-	console.log("Content-Type:", event.headers["content-type"]);
-	console.log("IsBase64Encoded:", event.isBase64Encoded);
-	const body = event.body;
-	if (body == null) {
+	console.info("isBase64Encoded:", event.isBase64Encoded);
+	if (event.body == null) {
 		return {
 			statusCode: 400,
 			body: JSON.stringify({
@@ -13,11 +11,19 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 			}),
 		};
 	}
-	console.log("Body Size", body.length);
+	const createRequest = JSON.parse(event.body);
+	if (createRequest.filename == null || createRequest.data == null) {
+		return {
+			statusCode: 400,
+			body: JSON.stringify({
+				message: "Filename and data are required",
+			}),
+		};
+	}
+
+	const body = Buffer.from(event.body, "base64");
 	try {
-		await image.create({
-			data: Buffer.from(body, "base64"),
-		});
+		await image.create(createRequest);
 
 		const response: APIGatewayProxyResult = {
 			statusCode: 201,

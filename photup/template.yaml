@@ -14,8 +14,6 @@ Globals:
       LogFormat: JSON
   Api:
     TracingEnabled: true
-    BinaryMediaTypes:
-      - image/*
     Auth:
       ApiKeyRequired: true
       UsagePlan:
