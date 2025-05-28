@@ -1,0 +1,26 @@
+Resources:
+  UploadImageRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: photup/upload-image-function
+      EmptyOnDelete: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      ImageScanningConfiguration:
+        ScanOnPush: true
+  ListImageRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: photup/list-image-function
+      EmptyOnDelete: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      ImageScanningConfiguration:
+        ScanOnPush: true 
+Outputs:
+  UploadImageRepositoryUri:
+    Description: ECR repository URI for the upload image function
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${UploadImageRepository}"
+  ListImageRepositoryUri:
+    Description: ECR repository URI for the list image function
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ListImageRepository}"

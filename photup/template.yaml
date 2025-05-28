@@ -39,12 +39,11 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       SSESpecification:
         SSEEnabled: true
-
   UploadImageFunction:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      ImageUri: ${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/photupb89c4a10/uploadimagefunction93dcad01repo
+      ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/photup/upload-image-function:latest
       Architectures:
       - x86_64
       Events:
@@ -68,6 +67,31 @@ Resources:
       Dockerfile: Dockerfile
       DockerBuildArgs:
         FEATURE: "upload-image"
+  ListImageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/photup/list-image-function:latest
+      Architectures:
+      - x86_64
+      Events:
+        ListImage:
+          Type: Api
+          Properties:
+            Path: /images
+            Method: get
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName: !Ref MetaDataTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref MetaDataTable
+    Metadata:
+      DockerTag: nodejs22.x
+      DockerContext: .
+      Dockerfile: Dockerfile
+      DockerBuildArgs:
+        FEATURE: "list-image"
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -86,8 +110,11 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   UploadImageApi:
-    Description: API Gateway endpoint
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+    Description: API Gateway endpoint for uploading images (POST)
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/images"
+  ListImageApi:
+    Description: API Gateway endpoint for listing images (GET)
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/images"
   S3BucketName:
     Description: S3 Bucket name for image storage
     Value: !Ref ImageStorage
