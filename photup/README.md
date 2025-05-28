@@ -18,15 +18,14 @@ graph LR;
 ```
 
 - 画像アップロード
-  - バイナリデータの送受信 <https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest_API/Sending_and_Receiving_Binary_Data>
   - UUID <https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUI>
   - ファイル名と保存先S3キーをDynamoDBに保存
   - メタデータを送る場合バイナリをbase64エンコードしたうえでjsonでPOSTするのが速そう。multipart form dataはパースが複雑層なので断念。
 - 画像一覧取得
-  - ファイル名と一緒にS3キーをリストするのは意味がない上にセキュリティを損なうので却下し、「ファイル名一覧を返す」に仕様変更する
+  - DynamoDBからファイル名とIDを取得する
 - 画像取得
   - ファイル名の指定はクエリ文字列で渡す
-  - バイナリデータを返す
+  - JSONでファイル名とBase64エンコードしたデータを返す。
 - 認証
   - API Gateway APIキー
     - <https://docs.aws.amazon.com/ja_jp/serverless-application-model/latest/developerguide/serverless-controlling-access-to-apis-keys.html>
