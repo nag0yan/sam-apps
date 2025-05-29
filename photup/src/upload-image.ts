@@ -1,5 +1,6 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as image from "./image-aws";
+import type { CreateRequest } from "./types/image";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 	console.info("isBase64Encoded:", event.isBase64Encoded);
@@ -11,7 +12,7 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 			}),
 		};
 	}
-	const createRequest = JSON.parse(event.body);
+	const createRequest: CreateRequest = JSON.parse(event.body);
 	if (createRequest.filename == null || createRequest.data == null) {
 		return {
 			statusCode: 400,
@@ -20,8 +21,6 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 			}),
 		};
 	}
-
-	const body = Buffer.from(event.body, "base64");
 	try {
 		await image.create(createRequest);
 

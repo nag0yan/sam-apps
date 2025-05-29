@@ -1,4 +1,5 @@
-export type CreateRequest = (image: {
+export type CreateRequest = {
 	filename: string;
 	data: string;
-}) => Promise<void>;
+};
+export type Create = (image: CreateRequest) => Promise<void>;

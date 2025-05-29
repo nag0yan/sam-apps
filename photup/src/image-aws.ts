@@ -1,6 +1,6 @@
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import type { CreateRequest } from "./types/image";
+import type { Create } from "./types/image";
 const s3Client = new S3Client({
 	region: "ap-northeast-1",
 });
@@ -8,7 +8,7 @@ const dynamoDbClient = new DynamoDBClient({
 	region: "ap-northeast-1",
 });
 
-export const create: CreateRequest = async (image) => {
+export const create: Create = async (image) => {
 	const decordedData = Buffer.from(image.data, "base64");
 	const id = crypto.randomUUID();
 	await s3Client.send(
