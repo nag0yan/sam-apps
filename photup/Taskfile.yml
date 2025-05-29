@@ -1,14 +1,47 @@
 version: '3'
 
 dotenv: ['.env']
+env:
+  REPO_UPLOAD_FUNCTION: "{{.ACCOUNT_ID}}.dkr.ecr.ap-northeast-1.amazonaws.com/photup/upload-image-function"
+  REPO_LIST_FUNCTION: "{{.ACCOUNT_ID}}.dkr.ecr.ap-northeast-1.amazonaws.com/photup/list-image-function"
 
 tasks:
+  ci:
+    desc: Run CI tasks
+    cmds:
+      - gitleaks git --staged --no-banner
+      - pnpm fmt
+      - pnpm exec tsc
+      - sam validate
+      - sam build
   deploy:
     desc: Build and Deploy the SAM application
     cmds:
       - sam build
-      - sam deploy
+      - |
+        sam deploy \
+        --image-repositories "UploadImageFunction=${REPO_UPLOAD_FUNCTION}" \
+        --image-repositories "ListImageFunction=${REPO_LIST_FUNCTION}"
   sync:
     desc: Sync the SAM application with the latest changes
     cmds:
-      - sam sync --image-repository "${ECR_REPOSITORY_URI}"
+      - | 
+        sam sync \
+        --image-repositories "UploadImageFunction=${REPO_UPLOAD_FUNCTION}" \
+        --image-repositories "ListImageFunction=${REPO_LIST_FUNCTION}"
+  test-post:
+    desc: Test the POST /images endpoint
+    cmds:
+      - |
+        curl -X POST "${ENDPOINT}/images" \
+        -H "x-api-key: ${API_KEY}" \
+        -H "Content-Type:application/json" \
+        -H "Accept:application/json" \
+        -d "@data/upload-request.json"
+  test-list:
+    desc: Test the GET /images endpoint
+    cmds:
+      - |
+        curl -X GET "${ENDPOINT}/images" \
+        -H "x-api-key: ${API_KEY}" \
+        -H "Accept: application/json"
