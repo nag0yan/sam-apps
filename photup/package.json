@@ -1,7 +1,6 @@
 {
 	"scripts": {
 		"build": "tsx ./scripts/build.ts",
-		"test": "jest",
 		"fmt": "biome check --write"
 	},
 	"devDependencies": {

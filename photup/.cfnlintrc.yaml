@@ -1,0 +1,2 @@
+ignore_checks:
+  - W3005 # API Gateway Api Auth UsagePlan Definition violate the rule

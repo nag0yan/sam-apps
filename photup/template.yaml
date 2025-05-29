@@ -17,7 +17,8 @@ Globals:
     Auth:
       ApiKeyRequired: true
       UsagePlan:
-        CreateUsagePlan: SHARED
+          Description: Usage plan for photup API
+          CreateUsagePlan: SHARED
 
 Resources:
   ImageStorage:
