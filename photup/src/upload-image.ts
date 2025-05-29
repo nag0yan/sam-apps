@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import * as image from "./image-s3";
+import * as image from "./image-aws";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 	console.info("isBase64Encoded:", event.isBase64Encoded);
