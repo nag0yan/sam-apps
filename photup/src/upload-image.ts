@@ -1,5 +1,5 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import * as image from "./image-aws";
+import * as Image from "./image-aws";
 import type { CreateRequest } from "./types/image";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
@@ -22,7 +22,7 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
 		};
 	}
 	try {
-		await image.create(createRequest);
+		await Image.create(createRequest);
 
 		const response: APIGatewayProxyResult = {
 			statusCode: 201,

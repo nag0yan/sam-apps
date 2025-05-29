@@ -1,10 +1,17 @@
 import {
 	DynamoDBClient,
+	GetItemCommand,
 	PutItemCommand,
+	ResourceNotFoundException,
 	ScanCommand,
 } from "@aws-sdk/client-dynamodb";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import type { Create, List } from "./types/image";
+import {
+	GetObjectCommand,
+	NoSuchKey,
+	PutObjectCommand,
+	S3Client,
+} from "@aws-sdk/client-s3";
+import { type Create, type List, NotFoundError } from "./types/image";
 const s3Client = new S3Client({
 	region: "ap-northeast-1",
 });
@@ -48,4 +55,37 @@ export const list: List = async () => {
 			filename: item.filename.S!,
 		})) || []
 	);
+};
+
+export const get = async (id: string) => {
+	try {
+		const getDataResponse = await s3Client.send(
+			new GetObjectCommand({
+				Bucket: process.env.BUCKET_NAME,
+				Key: id,
+			}),
+		);
+		const data = await getDataResponse.Body!.transformToString("base64");
+		const getMetadataResponse = await dynamoDbClient.send(
+			new GetItemCommand({
+				TableName: process.env.TABLE_NAME,
+				Key: {
+					id: { S: id },
+				},
+			}),
+		);
+		return {
+			id: getMetadataResponse.Item!.id.S!,
+			filename: getMetadataResponse.Item!.filename.S!,
+			data: data,
+		};
+	} catch (e) {
+		if (e instanceof NoSuchKey) {
+			throw new NotFoundError(`Image with ID ${id} not found`);
+		}
+		if (e instanceof ResourceNotFoundException) {
+			throw new NotFoundError(`Image with ID ${id}'s metadata not found`);
+		}
+		throw e;
+	}
 };

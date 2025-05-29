@@ -17,6 +17,15 @@ Resources:
         EncryptionType: AES256
       ImageScanningConfiguration:
         ScanOnPush: true 
+  GetImageRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: photup/get-image-function
+      EmptyOnDelete: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      ImageScanningConfiguration:
+        ScanOnPush: true 
 Outputs:
   UploadImageRepositoryUri:
     Description: ECR repository URI for the upload image function
@@ -24,3 +33,6 @@ Outputs:
   ListImageRepositoryUri:
     Description: ECR repository URI for the list image function
     Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ListImageRepository}"
+  GetImageRepositoryUri:
+    Description: ECR repository URI for the get image function
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${GetImageRepository}"
