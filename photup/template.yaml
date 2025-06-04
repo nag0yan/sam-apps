@@ -44,7 +44,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/photup/upload-image-function:latest
       Architectures:
       - x86_64
       Events:
@@ -72,7 +71,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.ap-northeast-1.amazonaws.com/photup/list-image-function:latest
       Architectures:
       - x86_64
       Events:
@@ -93,6 +91,33 @@ Resources:
       Dockerfile: Dockerfile
       DockerBuildArgs:
         FEATURE: "list-image"
+  GetImageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+      - x86_64
+      Events:
+        ListImage:
+          Type: Api
+          Properties:
+            Path: /images/{id}
+            Method: get
+      Policies:
+      - S3ReadPolicy:
+          BucketName: !Ref ImageStorage
+      - DynamoDBReadPolicy:
+          TableName: !Ref MetaDataTable
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref ImageStorage
+          TABLE_NAME: !Ref MetaDataTable
+    Metadata:
+      DockerTag: nodejs22.x
+      DockerContext: .
+      Dockerfile: Dockerfile
+      DockerBuildArgs:
+        FEATURE: "get-image"
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -116,6 +141,9 @@ Outputs:
   ListImageApi:
     Description: API Gateway endpoint for listing images (GET)
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/images"
+  GetImageApi:
+    Description: API Gateway endpoint for getting an image (GET)
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/images/{id}"
   S3BucketName:
     Description: S3 Bucket name for image storage
     Value: !Ref ImageStorage

@@ -1,9 +1,9 @@
 import type { APIGatewayProxyResult } from "aws-lambda";
-import * as image from "./image-aws";
+import * as Image from "./image-aws";
 
 export const lambdaHandler = async () => {
 	try {
-		const imageList = await image.list();
+		const imageList = await Image.list();
 		const response: APIGatewayProxyResult = {
 			statusCode: 200,
 			body: JSON.stringify({
