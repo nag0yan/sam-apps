@@ -1,14 +1,17 @@
 export type CreateRequest = {
-	filename: string;
-	data: string;
+	filename?: string;
 };
 export type Image = {
 	id: string;
 	filename: string;
 	data: string;
 };
+export type CreatedImage = {
+	id: string;
+	uploadUrl: string;
+};
 export type ImageMetadata = Omit<Image, "data">;
-export type Create = (image: CreateRequest) => Promise<void>;
+export type Create = (image: CreateRequest) => Promise<CreatedImage>;
 export type List = () => Promise<ImageMetadata[]>;
 export type Get = (id: string) => Promise<Image>;
 export class NotFoundError extends Error {
