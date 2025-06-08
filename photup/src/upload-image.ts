@@ -1,38 +1,37 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import type { APIGatewayProxyEvent } from "aws-lambda";
 import * as Image from "./image-aws";
-import type { CreateRequest } from "./types/image";
 
 export const lambdaHandler = async (event: APIGatewayProxyEvent) => {
-	console.info("isBase64Encoded:", event.isBase64Encoded);
-	if (event.body == null) {
-		return {
-			statusCode: 400,
-			body: JSON.stringify({
-				message: "No image data provided",
-			}),
-		};
-	}
-	const createRequest: CreateRequest = JSON.parse(event.body);
-	if (createRequest.filename == null || createRequest.data == null) {
-		return {
-			statusCode: 400,
-			body: JSON.stringify({
-				message: "Filename and data are required",
-			}),
-		};
+	const body = event.body;
+	let filename: string | undefined;
+	if (body != null) {
+		try {
+			const parsedBody = JSON.parse(body);
+			filename = parsedBody.filename;
+		} catch (e) {
+			console.error("Invalid json", e);
+			return {
+				statusCode: 400,
+				body: JSON.stringify({
+					message: "Invalid JSON",
+				}),
+			};
+		}
 	}
 	try {
-		await Image.create(createRequest);
-
-		const response: APIGatewayProxyResult = {
-			statusCode: 201,
+		const image = await Image.create({
+			filename,
+		});
+		console.info("Generated upload URL for image with ID:", image.id);
+		return {
+			statusCode: 200,
 			body: JSON.stringify({
-				message: "Image uploaded successfully",
+				id: image.id,
+				uploadUrl: image.uploadUrl,
 			}),
 		};
-		return response;
 	} catch (e) {
-		console.error("Error uploading image:", e);
+		console.error("Error on creating image:", e);
 		return {
 			statusCode: 500,
 			body: JSON.stringify({
