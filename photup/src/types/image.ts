@@ -4,13 +4,13 @@ export type CreateRequest = {
 export type Image = {
 	id: string;
 	filename: string;
-	data: string;
+	url: string;
 };
 export type CreatedImage = {
 	id: string;
 	uploadUrl: string;
 };
-export type ImageMetadata = Omit<Image, "data">;
+export type ImageMetadata = Omit<Image, "url">;
 export type Create = (image: CreateRequest) => Promise<CreatedImage>;
 export type List = () => Promise<ImageMetadata[]>;
 export type Get = (id: string) => Promise<Image>;
